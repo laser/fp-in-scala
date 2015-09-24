@@ -6,6 +6,7 @@ lazy val root = (project in file(".")).
 
     // add a test dependency on ScalaCheck
     libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.4",
+    libraryDependencies += "org.specs2" %% "specs2-scalacheck" % "3.6.4",
 
     // reduce the maximum number of errors shown by the Scala compiler
     maxErrors := 20,
@@ -15,9 +16,6 @@ lazy val root = (project in file(".")).
 
     // append -deprecation to the options passed to the Scala compiler
     scalacOptions += "-deprecation",
-
-    // set the initial commands when entering 'console' or 'consoleQuick', but not 'consoleProject'
-    // initialCommands in console := "import myproject._",
 
     // set Ivy logging to be at the highest level
     ivyLoggingLevel := UpdateLogging.Full,
