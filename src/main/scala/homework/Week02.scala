@@ -8,7 +8,7 @@ object Week02 {
   def fib(n: Int): Int = {
     @tailrec
     def go(n1: Int, n2: Int, iterations: Int): Int = {
-      if (iterations > n) n1+n2
+      if (iterations >= n) n1+n2
       else go(n2, n1+n2, iterations+1)
     }
 
@@ -21,7 +21,7 @@ object Week02 {
   }
 
   // Exercise 2.2, page 24
-  def isSorted[A](as: List[A], ordered: (A, A) => Boolean): Boolean = {
+  def isSorted[A](as: List[A])(ordered: (A, A) => Boolean): Boolean = {
     @tailrec
     def go(acc: Boolean, as: List[A]): Boolean = {
       as match {
