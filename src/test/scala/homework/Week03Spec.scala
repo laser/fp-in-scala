@@ -37,23 +37,12 @@ object ListDropProp extends Properties("drop") {
 }
 
 object ListDropWhileProp extends Properties("dropWhile") {
-  property(".. from empty list") = forAll { (f: Int => Boolean) =>
-    dropWhile(List[Int](), f) == List[Int]()
+  property(".. using an arbitrary predicate") = forAll { (ns: List[Int], p: Int => Boolean) =>
+    dropWhile(ns, p).length <= ns.length
   }
 
   property(".. relies on return value of predicate") = forAll(G.nonEmptyIntList) { ns =>
     dropWhile(ns, Function.const(false)) == ns
-  }
-}
-
-class Week03PropertiesSpec extends Specification with ScalaCheck {
-
-}
-
-object Week03Spec extends Specification {
-  "dropWhile" should {
-    "do something" in {
-      1 mustEqual 1
-    }
+    dropWhile(ns, Function.const(true)) == List[Int]()
   }
 }
