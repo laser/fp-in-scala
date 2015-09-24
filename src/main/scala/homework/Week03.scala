@@ -1,3 +1,5 @@
+package homework
+
 import scala.annotation.tailrec
 
 // sealed trait List[+A]

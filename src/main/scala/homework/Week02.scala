@@ -1,3 +1,5 @@
+package homework
+
 import scala.annotation.tailrec
 
 object Week02 {
