@@ -23,7 +23,7 @@ object Week02 {
     @tailrec
     def go(acc: Boolean, as: List[A]): Boolean = {
       as match {
-        case x :: y :: ys => go(acc && ordered(x, y), y :: ys)
+        case x::y::ys => go(acc && ordered(x, y), y::ys)
         case _ => acc
       }
     }

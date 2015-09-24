@@ -8,13 +8,13 @@ object List {
   // Exercise 3.2, page 35
   def tail[A](as: List[A]): List[A] = {
     as match {
-      case _ :: as => as
+      case _::as => as
       case _ => Nil
     }
   }
 
   // Exercise 3.3, page 36
-  def setHead[A](a: A, as: List[A]): List[A] = a :: as
+  def setHead[A](a: A, as: List[A]): List[A] = a::as
 
   // Exercise 3.4, page 36
   def drop[A](as: List[A], n: Int): List[A] = {
@@ -32,7 +32,7 @@ object List {
     @tailrec
     def go(as: List[A], acc: Boolean): List[A] = {
       as match {
-        case x :: xs if acc => go(xs, p(x))
+        case x::xs if acc => go(xs, p(x))
         case _ => as
       }
     }
