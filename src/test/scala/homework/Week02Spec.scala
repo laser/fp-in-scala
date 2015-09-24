@@ -1,3 +1,5 @@
+package homework
+
 import org.specs2.mutable._
 
 import homework.Week02.{ fib, isSorted, curry, uncurry, compose }

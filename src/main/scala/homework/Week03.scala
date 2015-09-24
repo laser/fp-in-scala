@@ -18,7 +18,7 @@ object Week03 {
   def drop[A](as: List[A], n: Int): List[A] = {
     @tailrec
     def go(as: List[A], counter: Int): List[A] = {
-      if (counter > n) as
+      if (counter >= n) as
       else go(tail(as), counter+1)
     }
 
@@ -28,14 +28,14 @@ object Week03 {
   // Exercise 3.5, page 36
   def dropWhile[A](as: List[A], p: A => Boolean): List[A] = {
     @tailrec
-    def go(as: List[A], acc: Boolean): List[A] = {
+    def go(as: List[A]): List[A] = {
       as match {
-        case x::xs if acc => go(xs, p(x))
+        case x::xs if p(x) => go(xs)
         case _ => as
       }
     }
 
-    go(as, true)
+    go(as)
   }
 
   // Exercise 3.6, page 37

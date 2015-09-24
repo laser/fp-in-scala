@@ -12,7 +12,7 @@ lazy val root = (project in file(".")).
     maxErrors := 20,
 
     // increase the time between polling for file changes when using continuous execution
-    pollInterval := 1000,
+    pollInterval := 100,
 
     // append -deprecation to the options passed to the Scala compiler
     scalacOptions += "-deprecation",
