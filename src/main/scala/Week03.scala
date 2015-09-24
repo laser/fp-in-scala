@@ -1,20 +1,20 @@
 import scala.annotation.tailrec
 
-sealed trait List[+A] 
-case object Nil extends List[Nothing] 
-case class Cons[+A](head: A, tail: List[A]) extends List[A]
+// sealed trait List[+A]
+// case object Nil extends List[Nothing]
+// case class Cons[+A](head: A, tail: List[A]) extends List[A]
 
 object List {
   // Exercise 3.2, page 35
   def tail[A](as: List[A]): List[A] = {
     as match {
-      case Cons(_, as) => as
+      case _ :: as => as
       case _ => Nil
     }
   }
 
   // Exercise 3.3, page 36
-  def setHead[A](a: A, as: List[A]): List[A] = Cons(a, as)
+  def setHead[A](a: A, as: List[A]): List[A] = a :: as
 
   // Exercise 3.4, page 36
   def drop[A](as: List[A], n: Int): List[A] = {
@@ -32,14 +32,14 @@ object List {
     @tailrec
     def go(as: List[A], acc: Boolean): List[A] = {
       as match {
-        case Cons(x, xs) if acc => go(xs, p(x))
+        case x :: xs if acc => go(xs, p(x))
         case _ => as
       }
     }
 
     go(as, true)
   }
-  
+
   // Exercise 3.6, page 37
   // Exercise 3.7, page 40
   // Exercise 3.8, page 40
