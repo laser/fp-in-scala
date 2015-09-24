@@ -2,11 +2,7 @@ package homework
 
 import scala.annotation.tailrec
 
-// sealed trait List[+A]
-// case object Nil extends List[Nothing]
-// case class Cons[+A](head: A, tail: List[A]) extends List[A]
-
-object List {
+object Week03 {
   // Exercise 3.2, page 35
   def tail[A](as: List[A]): List[A] = {
     as match {
