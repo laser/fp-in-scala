@@ -4,15 +4,8 @@ lazy val root = (project in file(".")).
     version := "0.1.0",
     scalaVersion := "2.11.7",
 
-    // set the main Scala source directory to be <base>/src
-    scalaSource in Compile := baseDirectory.value / "src",
-
-    // set the Scala test source directory to be <base>/test
-    scalaSource in Test := baseDirectory.value / "test",
-
     // add a test dependency on ScalaCheck
-    libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.4" % Test,
-    libraryDependencies += "org.specs2" %% "specs2-scalacheck" % "3.6.4" % Test,
+    libraryDependencies += "org.specs2" %% "specs2-core" % "3.6.4",
 
     // reduce the maximum number of errors shown by the Scala compiler
     maxErrors := 20,
