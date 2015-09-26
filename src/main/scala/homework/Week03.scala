@@ -39,6 +39,13 @@ object Week03 {
   }
 
   // Exercise 3.6, page 37
+  def init[A](as: List[A]): List[A] = {
+    as match {
+      case x::y::ys => x :: init(y::ys)
+      case _ => Nil
+    }
+  }
+
   // Exercise 3.7, page 40
   // Exercise 3.8, page 40
   // Exercise 3.9, page 40

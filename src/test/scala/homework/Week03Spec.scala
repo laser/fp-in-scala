@@ -6,7 +6,7 @@ import org.scalacheck.Properties
 import org.specs2.mutable._
 import org.specs2.ScalaCheck
 
-import homework.Week03.{ tail, setHead, drop, dropWhile }
+import homework.Week03.{ init, tail, setHead, drop, dropWhile }
 
 object G {
   val nonEmptyIntList = for {
@@ -44,5 +44,20 @@ object ListDropWhileProp extends Properties("dropWhile") {
   property(".. relies on return value of predicate") = forAll(G.nonEmptyIntList) { ns =>
     dropWhile(ns, Function.const(false)) == ns
     dropWhile(ns, Function.const(true)) == List[Int]()
+  }
+}
+
+object ListInitProp extends Properties("init") {
+  property(".. dunno") = forAll(G.nonEmptyIntList) { ns =>
+    init(ns).length == ns.length-1
+  }
+}
+
+
+object Week03Spec extends Specification {
+  "init" should {
+    "preserve the original ordering" in {
+      init(List[Int](1,2,3,4)) mustEqual List[Int](1,2,3)
+    }
   }
 }
