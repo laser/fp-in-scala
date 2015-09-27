@@ -98,7 +98,7 @@ object ListFilterViaFlatMapProp extends Properties("filterViaFlatMap") {
   }
 }
 
-object Week03Spec extends Specification {
+object Week03ListSpec extends Specification {
   "init" should {
     "preserve the original ordering" in {
       init(List[Int](1,2,3,4)) mustEqual List[Int](1,2,3)
@@ -111,6 +111,20 @@ object Week03Spec extends Specification {
         List[Int](item, item, item)
       } mustEqual List[Int](1,1,1,2,2,2,3,3,3)
     }
+  }
+
+}
+
+object Week03TreeSpec extends Specification {
+
+  "treeSize" should {
+    val t1: Tree[Int] = Branch(Branch(Leaf(1), Leaf(2)), Leaf(10))
+    treeSize(t1) mustEqual 3
+  }
+
+  "intTreeMax" should {
+    val t1: Tree[Int] = Branch(Branch(Leaf(1), Leaf(2)), Leaf(10))
+    intTreeMax(t1) mustEqual 10
   }
 
   "treeDepth" should {
@@ -127,20 +141,20 @@ object Week03Spec extends Specification {
   }
 
   "treeFold" should {
-    "perform a left-to-right, depth-first traversal of nodes" in {
-      val t1: Tree[Int] = Leaf(4)
-      treeFold((v: Int) => v.toString)((left: String, right: String) => left + right)(t1) mustEqual "4"
+    val t1: Tree[Int] = Leaf(4)
+    val t2: Tree[String] = Branch(Leaf("01"), Branch(Branch(Leaf("02"), Leaf("03")), Leaf("04")))
 
-      val t2: Tree[String] = Branch(Leaf("01"), Branch(Branch(Leaf("02"), Leaf("03")), Leaf("04")))
-      treeFold((v: String) => v)((left: String, right: String) => left + right)(t2) mustEqual "01020304"
+    "perform a left-to-right, depth-first traversal of nodes" in {
+      treeFold(t1)((v: Int) => v.toString)((left: String, right: String) => left + right) mustEqual "4"
+      treeFold(t2)((v: String) => v)((left: String, right: String) => left + right) mustEqual "01020304"
     }
 
     "using constructors results in identity of tree" in {
       def mkLeaf(v: String): Tree[String] = Leaf(v)
       def mkBranch(left: Tree[String], right: Tree[String]): Tree[String] = Branch(left, right)
 
-      val t: Tree[String] = Branch(Leaf("01"), Branch(Branch(Leaf("02"), Leaf("03")), Leaf("04")))
-      treeFold(mkLeaf _)(mkBranch _)(t) == t
+      treeFold(t2)(mkLeaf _)(mkBranch _) == t2
     }
   }
+
 }
