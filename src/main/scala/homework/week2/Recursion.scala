@@ -2,7 +2,7 @@ package homework
 
 import scala.annotation.tailrec
 
-object Week02 {
+object Recursion {
 
   // Exercise 2.1, page 21
   def fib(n: Int): Int = {

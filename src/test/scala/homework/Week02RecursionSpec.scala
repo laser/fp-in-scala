@@ -2,7 +2,7 @@ package homework
 
 import org.specs2.mutable._
 
-import homework.Week02.{ fib, isSorted, curry, uncurry, compose }
+import homework.Recursion.{ fib, isSorted, curry, uncurry, compose }
 
 object Week02Spec extends Specification {
   "fibs" should {

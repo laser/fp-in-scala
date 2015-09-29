@@ -2,7 +2,7 @@ package homework
 
 import scala.annotation.tailrec
 
-object Week03 {
+object ListUtil {
   // Exercise 3.2, page 35
   def tail[A](as: List[A]): List[A] = {
     as match {
@@ -120,34 +120,7 @@ object Week03 {
 
   // Exercise 3.24, page 44
   def hasSubsequence[A](sup: List[A], sub: List[A]): Boolean = ???
-
-  sealed trait Tree[+A]
-  case class Leaf[A](value: A) extends Tree[A]
-  case class Branch[A](left: Tree[A], right: Tree[A]) extends Tree[A]
-
-  // Exercise 3.25, page 46
-  def treeSize[A](t: Tree[A]): Int = treeFold(t)(Function.const(1))(_+_)
-
-  // Exercise 3.26, page 46
-  def intTreeMax(t: Tree[Int]): Int = 
-    treeFold(t)((x: Int) => x)((left: Int, right: Int) => if (left > right) left else right)
-
-  // Exercise 3.27, page 46
-  def treeDepth[A](t: Tree[A]): Int = 
-    treeFold(t)(Function.const(0))((left: Int, right: Int) => if (left > right) left+1 else right+1)
-
-  // Exercise 3.28, page 46
-  // note: the compiler could not figure out that Leaf(f(v)) was of type Tree[B]
-  //       so I had to give it a hint
-  def treeMap[A, B](t: Tree[A])(f: A => B): Tree[B] = 
-    treeFold(t)((v: A) => Leaf(f(v)): Tree[B])(Branch(_, _))
-
-  // Exercise 3.29, page 47
-  def treeFold[A, B](t: Tree[A])(leaf: A => B)(branch: (B, B) => B): B = t match {
-    case Leaf(value) => leaf(value)
-    case Branch(left, right) => branch(treeFold(left)(leaf)(branch), treeFold(right)(leaf)(branch))
-  }
-
+  
   // an alternative implementation of foldLeft over List[A]
   def foldLeft2[A, B](as: List[A], nil: B)(cons: (B, A) => B): B = as match {
     case Nil => nil

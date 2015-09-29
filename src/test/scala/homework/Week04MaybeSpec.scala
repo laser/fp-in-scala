@@ -2,12 +2,12 @@ package homework
 
 import org.specs2.mutable._
 
-import homework.Maybe._
+import homework.Option._
 
-object MaybeSpec extends Specification {
+object OptionSpec extends Specification {
 
-  val something: Maybe[Int] = Just(10)
-  val nothing: Maybe[Int]  = Nothing
+  val something: Option[Int] = Just(10)
+  val nothing: Option[Int]  = Nothing
 
   "map" should {
     ".. work?" in {
