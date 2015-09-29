@@ -2,6 +2,7 @@ package homework
 
 import scala.{ Option => _, Some => _, None => _ }
 
+// Exercise 4.1
 sealed trait Option[+A] { self =>
   def map[B](f: A => B): Option[B] = self match {
     case Some(x) => Some(f(x))
@@ -28,7 +29,7 @@ sealed trait Option[+A] { self =>
     case _ => None
   }
 }
-case class Some[+A](get: A) extends Option[A]
+case class Some[+A](value: A) extends Option[A]
 case object None extends Option[Nothing]
 
 object Option {

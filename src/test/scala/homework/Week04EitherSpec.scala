@@ -1,4 +1,6 @@
-package homework 
+package homework
+
+import scala.{ Either => _, Left => _, Right => _, _ }
 
 import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.{ arbitrary }
@@ -10,12 +12,8 @@ import org.specs2.mutable._
 
 import homework.Either._
 
-object EitherSpec extends Specification {
-  // stuff
-}
-
 object EitherProps extends Properties("Either") {
-  implicit def arbEither[T, U](implicit at: Arbitrary[T], au: Arbitrary[U]): Arbitrary[Either[T, U]] = 
+  implicit def arbEither[T, U](implicit at: Arbitrary[T], au: Arbitrary[U]): Arbitrary[Either[T, U]] =
     Arbitrary(oneOf(arbitrary[T].map(Left(_)), arbitrary[U].map(Right(_))))
 
   property(".. map over Either") = forAll { e: Either[Int, Int] =>

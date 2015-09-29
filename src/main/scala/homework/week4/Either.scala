@@ -1,5 +1,7 @@
 package homework
 
+import scala.{ Either => _, Left => _, Right => _, _ }
+
 // Exercise 4.6, page 62
 sealed trait Either[+E, +A] { self =>
   def map[B](f: A => B): Either[E, B] = self match {
@@ -23,8 +25,7 @@ sealed trait Either[+E, +A] { self =>
     case (_, Left(x))         => Left(x)
   }
 }
-
-case class Left[+E](value: E) extends Either[E, Nothing] 
+case class Left[+E](value: E) extends Either[E, Nothing]
 case class Right[+A](value: A) extends Either[Nothing, A]
 
 object Either {
