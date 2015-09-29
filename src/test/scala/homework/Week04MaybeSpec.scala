@@ -2,9 +2,9 @@ package homework
 
 import org.specs2.mutable._
 
-import homework.Week04._
+import homework.Maybe._
 
-object Exercise4_1Spec extends Specification {
+object MaybeSpec extends Specification {
 
   val something: Maybe[Int] = Just(10)
   val nothing: Maybe[Int]  = Nothing
