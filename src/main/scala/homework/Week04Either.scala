@@ -29,12 +29,16 @@ case class Right[+A](value: A) extends Either[Nothing, A]
 
 object Either {
   // Exercise 4.7, page 62
-  //def sequence[E, A](es: List[Either[E, A]]): Either[E, List[A]] = ???
+  def sequence[E, A](es: List[Either[E, A]]): Either[E, List[A]] = traverse(es)(id)
 
-  //def traverse[E, A, B](as: List[A])(f: A => Either[E, B]): Either[E, List[B]] = ???
+  def traverse[E, A, B](as: List[A])(f: A => Either[E, B]): Either[E, List[B]] = as match {
+    case Nil => Right(Nil)
+    case x::xs => f(x).map2(traverse(xs)(f))(_::_)
+  }
 
   // Exercise 4.8, page 63
   //
-  // how would sequence and traverse need to change in order to validate everything
-  // and collect errors?
+  // how would this stuff need to change in order to validate everything and collect errors?
+  //
+  // We'd need a data structure on the left side of Either that was appendable, like a List[E]
 }

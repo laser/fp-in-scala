@@ -47,9 +47,7 @@ object MaybeSpec extends Specification {
       nothing.filter(Function.const(true)) mustEqual Nothing
     }
   }
-}
 
-object Exercise4_4Spec extends Specification {
   "sequence" should {
     ".. work?" in {
       val mas1 = List(Just(1), Nothing)
