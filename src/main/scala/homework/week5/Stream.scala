@@ -132,10 +132,21 @@ sealed trait Stream[+A] { self =>
   def hasSubsequence[A](s: Stream[A]): Boolean = tails.exists(_.startsWith(s))
 
   // Exercise 5.16
-  def scanRight[B](z: => B)(f: (A, => B) => B): Stream[B] = unfold((z, self))({
-    case (z, s@Cons(h, t)) => Some((s.foldRight(z)(f), (z, t())))
-    case (z, Empty) => None
-  }).append(z)
+
+  // Note: scanRight didn't work because I would have computed f over the whole
+  //       stream on the first shot and there was no way to unwind as we moved
+  //       towards the head of the original Stream
+  //
+  //def scanRight[B](z: => B)(f: (A, => B) => B): Stream[B] = unfold((z, self))({
+    //case (z2, s@Cons(h, t)) => Some((s.foldRight(z2)(f), (z2, t())))
+    //case (z2, Empty) => None
+  //}).append(z)
+
+  def scanRight[B](z: => B)(f: (A, => B) => B): Stream[B] = {
+    self.foldRight((z, cons(z, empty[B])))({ (item, acc) => acc match {
+      case (z2, s) => (f(item, z2), cons(f(item, z2), s))
+    }})._2
+  }
 }
 case object Empty extends Stream[Nothing]
 case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]

@@ -119,8 +119,8 @@ object Week05StreamSpec extends Specification {
 
   "scanRight" should {
     ".. create a new Stream of intermediate results" in {
-      Stream(1,2,3).scanRight(0)(_+_).toList mustEqual List(6,5,3,0)
       Stream(1,2,3).scanRight("0")((item, acc) => s"$item+$acc").toList mustEqual List("1+2+3+0", "2+3+0", "3+0", "0")
+      Stream(1,2,3).scanRight(0)(_+_).toList mustEqual List(6,5,3,0)
     }
   }
 }
