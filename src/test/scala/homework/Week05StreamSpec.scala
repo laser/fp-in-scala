@@ -82,4 +82,45 @@ object Week05StreamSpec extends Specification {
       fibs.take(5).toList mustEqual List(0, 1, 1, 2, 3)
     }
   }
+
+  "mapViaUnfold" should {
+    ".. work?" in {
+      fibs.take(5).mapViaUnfold(_+1).toList mustEqual List(1,2,2,3,4)
+    }
+  }
+
+  "zipWithViaUnfold" should {
+    ".. work?" in {
+      fibs.zipWithViaUnfold(fibs)(_+_).take(5).toList mustEqual List(0, 2, 2, 4, 6)
+    }
+  }
+
+  "startsWith" should {
+    ".. tell me if a Stream starts with some other Stream" in {
+      constant(5).startsWith(Stream(1)) mustEqual false
+      constant(5).startsWith(Stream(5)) mustEqual true
+      Stream(5).startsWith(constant(5)) mustEqual false
+      Stream(5, 5, 5).startsWith(Stream(5, 5)) mustEqual true
+    }
+  }
+
+  "tails" should {
+    ".. return the Stream of suffixes of the input sequence" in {
+      Stream(1,2,3).tails.map(_.toList).toList mustEqual List(List(1,2,3), List(2,3), List(3), Nil)
+    }
+  }
+
+  "hasSubsequence" should {
+    ".. tell you if a Stream contains a subsequence (Stream)" in {
+      fibs.take(10).hasSubsequence(Stream(0, 99)) mustEqual false
+      fibs.take(10).hasSubsequence(Stream(2, 3, 5)) mustEqual true
+    }
+  }
+
+  "scanRight" should {
+    ".. create a new Stream of intermediate results" in {
+      Stream(1,2,3).scanRight(0)(_+_).toList mustEqual List(6,5,3,0)
+      Stream(1,2,3).scanRight("0")((item, acc) => s"$item+$acc").toList mustEqual List("1+2+3+0", "2+3+0", "3+0", "0")
+    }
+  }
 }

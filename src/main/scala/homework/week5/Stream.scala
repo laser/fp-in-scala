@@ -57,6 +57,8 @@ sealed trait Stream[+A] { self =>
   // Exercise 5.4
   def forAll(p: A => Boolean): Boolean = self.foldRight(true)(p(_) && _)
 
+  def exists(p: A => Boolean): Boolean = self.foldRight(false)(p(_) || _)
+
   // Exercise 5.5
   def takeWhile(p: A => Boolean): Stream[A] = self.foldRight(Empty:Stream[A]){ (item, acc) =>
     if (p(item)) cons(item, acc) else Empty
@@ -83,22 +85,57 @@ sealed trait Stream[+A] { self =>
     self.foldRight(empty[B])((x, z) => f(x).foldRight(empty[B])((x2, z2) => cons(x2, z2)))
 
   // Exercise 5.13
-  // use unfold to implement map, take, takeWhile, zipWith, and zipAll
-  def zipAll[B](s2: Stream[B]): Stream[(Option[A],Option[B])] = ???
+  def mapViaUnfold[B](f: A => B): Stream[B] = unfold(self)({
+    case Empty => None
+    case Cons(h, t) => Some((f(h()), t()))
+  })
+
+  def takeViaUnfold(n: Int): Stream[A] = unfold((n, self))({
+    case (_, Empty) => None
+    case (m, Cons(_, _)) if m == 0 => None
+    case (m, Cons(h, t)) => Some((h(), (m-1, t())))
+  })
+
+  def takeWhileViaUnfold(p: A => Boolean): Stream[A] = unfold(self)({
+    case Empty => None
+    case Cons(h, _) if !p(h()) => None
+    case Cons(h, t) => Some((h(), t()))
+  })
+
+  def zipWithViaUnfold[B>:A](as: Stream[B])(f: (B, B) => B): Stream[B] = unfold((self, as))({
+    case (Cons(h1, t1), Cons(h2, t2)) => Some((f(h1(), h2()), (t1(), t2())))
+    case _                            => None
+  })
+
+  def zipAll[B](s2: Stream[B]): Stream[(Option[A],Option[B])] = unfold((self, s2))({
+    case (Cons(h1, t1), Cons(h2, t2)) => Some(((Some(h1()), Some(h2())), (t1(), t2())))
+    case (Cons(h1, t1), _)            => Some(((Some(h1()), None), (t1(), empty)))
+    case (_, Cons(h2, t2))            => Some(((None, Some(h2())), (empty, t2())))
+    case _                            => None
+  })
 
   // Exercise 5.14
-  // implement startsWith using function's you've written
-  // Stream(1,2,3) startsWith Stream(1,2) would be true
-  def startsWith[A](s: Stream[A]): Boolean = ???
+  def startsWith[A](s: Stream[A]): Boolean = self.zipAll(s).foldRight(true)({ (item, z) =>
+    item match {
+      case (Some(x), Some(y)) => x == y && z
+      case (Some(_), None) => true // laziness ftw
+      case _ => false
+    }
+  })
 
   // Exercise 5.15
-  // implement tails using unfold
-  def tails: Stream[Stream[A]] = ???
+  def tails: Stream[Stream[A]] = unfold(self)({
+    case s@Cons(h, t) => Some((s, t()))
+    case Empty => None
+  }).append(empty[A])
 
-  //def hasSubsequence[A](s: Stream[A]): Boolean = tails exists (_ startsWith s)
+  def hasSubsequence[A](s: Stream[A]): Boolean = tails.exists(_.startsWith(s))
 
   // Exercise 5.16
-  // generalize tails to scanRight
+  def scanRight[B](z: => B)(f: (A, => B) => B): Stream[B] = unfold((z, self))({
+    case (z, s@Cons(h, t)) => Some((s.foldRight(z)(f), (z, t())))
+    case (z, Empty) => None
+  }).append(z)
 }
 case object Empty extends Stream[Nothing]
 case class Cons[+A](h: () => A, t: () => Stream[A]) extends Stream[A]
