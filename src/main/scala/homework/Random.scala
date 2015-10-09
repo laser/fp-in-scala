@@ -1,5 +1,6 @@
 package homework
 
+import homework.State._
 import homework.RNG._
 
 trait RNG {
@@ -7,8 +8,6 @@ trait RNG {
 }
 
 case class SimpleRNG(seed: Long) extends RNG {
-  val int: Rand[Int] = _.nextInt
-
   def nextInt: (Int, RNG) = {
     val newSeed = (seed * 0x5DEECE66DL + 0xBL) & 0xFFFFFFFFFFFFL
     val nextRNG = SimpleRNG(newSeed)
@@ -18,10 +17,8 @@ case class SimpleRNG(seed: Long) extends RNG {
 }
 
 object RNG {
-  type Rand[+A] = RNG => (A, RNG)
-
   // Exercise 6.1
-  def nonNegativeInt(rng: RNG): (Int, RNG) = {
+  def nonNegativeInt: State[RNG, Int] = State { (rng: RNG) =>
     val (n, rng2) = rng.nextInt
 
     if (n < 0) ((n+1) * -1, rng2)
@@ -29,30 +26,36 @@ object RNG {
   }
 
   // Exercise 6.2
-  def double(rng: RNG): (Double, RNG) = nonNegativeInt(rng) match {
-    case (n, rng2) => (n.toDouble / Int.MaxValue.toDouble, rng2)
-  }
-
-  // Exercise 6.3
-  def intDouble(rng: RNG): ((Int,Double), RNG) = rng.nextInt match {
-    case (n, rng2) => double(rng2) match {
-      case (n2, rng3) => ((n, n2), rng3)
+  def double: State[RNG, Double] = State { (rng: RNG) =>
+    nonNegativeInt.run(rng) match {
+      case (n, rng2) => (n.toDouble / Int.MaxValue.toDouble, rng2)
     }
   }
 
-  def doubleInt(rng: RNG): ((Double,Int), RNG) = intDouble(rng) match {
-    case ((n1, n2), rng2) => ((n2, n1), rng2)
+  // Exercise 6.3
+  def intDouble: State[RNG, (Int, Double)] = State { (rng: RNG) =>
+    rng.nextInt match {
+      case (n, rng2) => double.run(rng2) match {
+        case (n2, rng3) => ((n, n2), rng3)
+      }
+    }
   }
 
-  def double3(rng: RNG): ((Double,Double,Double), RNG) = {
-    val (n1, rng1) = double(rng)
-    val (n2, rng2) = double(rng1)
-    val (n3, rng3) = double(rng2)
+  def doubleInt: State[RNG, (Double, Int)] = State { (rng: RNG) =>
+    intDouble.run(rng) match {
+      case ((n1, n2), rng2) => ((n2, n1), rng2)
+    }
+  }
+
+  def double3: State[RNG, (Double, Double, Double)] = State { (rng: RNG) =>
+    val (n1, rng1) = double.run(rng)
+    val (n2, rng2) = double.run(rng1)
+    val (n3, rng3) = double.run(rng2)
     ((n1,n2,n3), rng3)
   }
 
   // Exercise 6.4
-  def ints(count: Int)(rng: RNG): (List[Int], RNG) = {
+  def ints(count: Int): State[RNG, List[Int]] = State { (rng: RNG) =>
     def go(counter: Int, acc: List[Int], rng: RNG): (List[Int], RNG) =
       if (counter == 0) (acc, rng)
       else {
@@ -63,27 +66,36 @@ object RNG {
     go(count, Nil, rng)
   }
 
-  // Exercise 6.5
-  def map[A,B](s: Rand[A])(f: A => B): Rand[B] = rng => {
-    val (a, rng2) = s(rng)
-    (f(a), rng2)
+  def doubleUsingMap: State[RNG,Double] =
+    State(nonNegativeInt.map(n => n.toDouble / Int.MaxValue.toDouble).run(_:RNG))
+
+  def intDoubleUsingBoth: State[RNG,(Int, Double)] =
+    State(State((rng: RNG) => rng.nextInt).both(double).run(_:RNG))
+
+  def doubleIntUsingBoth: State[RNG,(Double, Int)] =
+    State(double.both(State((rng: RNG) => rng.nextInt)).run(_:RNG))
+
+  def nonNegativeLessThan(n: Int): State[RNG,Int] = nonNegativeInt.flatMap { m =>
+    val mod = m % n
+    if (m + (n-1) - mod >= 0) unit(mod)
+    else nonNegativeLessThan(n)
   }
-
-  def doubleUsingMap(rng: RNG): (Double, RNG) = map(nonNegativeInt)(n => n.toDouble / Int.MaxValue.toDouble)(rng)
-
-  // Exercise 6.6
-  def map2[A,B,C](ra: Rand[A], rb: Rand[B])(f: (A, B) => C): Rand[C] = rng => {
-    val (a, rng2) = ra(rng)
-    val (b, rng3) = rb(rng2)
-    (f(a, b), rng3)
-  }
-
-  def both[A,B](ra: Rand[A], rb: Rand[B]): Rand[(A,B)] = map2(ra, rb)((a, b) => (a, b))
-
-  def intDoubleUsingBoth(rng: RNG): ((Int, Double), RNG) = both(_.nextInt, double)(rng)
-
-  def doubleIntUsingBoth(rng: RNG): ((Double, Int), RNG) = both(double, _.nextInt)(rng)
 
   // Exercise 6.7
-  def sequence[A](fs: List[Rand[A]]): Rand[List[A]] = ???
+  def sequence[S,A](fs: List[State[S,A]]): State[S,List[A]] = State { (s: S) =>
+    fs.foldRight((List[A](), s)) { (f, acc) =>
+      acc match {
+        case (xs, s2) => f.run(s2) match {
+          case (x, s3) => (x::xs, s3)
+        }
+      }
+    }
+  }
+
+  def mapViaFlatMap[S,A,B](s: State[S,A])(f: A => B): State[S,B] = s.flatMap(x => unit(f(x)))
+
+  def map2ViaFlatMap[S,A,B,C](ra: State[S,A], rb: State[S,B])(f: (A, B) => C): State[S,C] = for {
+    a <- ra
+    b <- rb
+  } yield f(a, b)
 }
