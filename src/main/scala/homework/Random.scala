@@ -81,17 +81,6 @@ object RNG {
     else nonNegativeLessThan(n)
   }
 
-  // Exercise 6.7
-  def sequence[S,A](fs: List[State[S,A]]): State[S,List[A]] = State { (s: S) =>
-    fs.foldRight((List[A](), s)) { (f, acc) =>
-      acc match {
-        case (xs, s2) => f.run(s2) match {
-          case (x, s3) => (x::xs, s3)
-        }
-      }
-    }
-  }
-
   def mapViaFlatMap[S,A,B](s: State[S,A])(f: A => B): State[S,B] = s.flatMap(x => unit(f(x)))
 
   def map2ViaFlatMap[S,A,B,C](ra: State[S,A], rb: State[S,B])(f: (A, B) => C): State[S,C] = for {

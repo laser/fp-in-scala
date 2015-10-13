@@ -24,4 +24,14 @@ case class State[S,+A](run: S => (A, S)) { self =>
 
 object State {
   def unit[S,A](x: A): State[S,A] = State { (s: S) => (x, s) }
+
+  def sequence[S,A](fs: List[State[S,A]]): State[S,List[A]] = State { (s: S) =>
+    fs.foldRight((List[A](), s)) { (f, acc) =>
+      acc match {
+        case (xs, s2) => f.run(s2) match {
+          case (x, s3) => (x::xs, s3)
+        }
+      }
+    }
+  }
 }

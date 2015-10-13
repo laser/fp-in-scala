@@ -4,6 +4,7 @@ import org.scalacheck.Arbitrary
 import org.scalacheck.Arbitrary.{ arbitrary }
 
 import homework.RNG._
+import homework.State._
 
 class RNGProps extends HomeworkPropertyCheck {
   implicit def arbRNG: Arbitrary[RNG] = Arbitrary(arbitrary[Long].map(SimpleRNG(_)))
